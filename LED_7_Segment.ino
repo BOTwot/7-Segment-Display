@@ -3,7 +3,7 @@
 #define   MOSI  11
 #define   MISO  12
 #define   SCK   13
-#define   SERIAL_DEBUG
+//#define   SERIAL_DEBUG
 //#define USE_BLINKWITHOUTDELAY
 #ifdef USE_BLINKWITHOUTDELAY
 //for timing purposes
@@ -43,22 +43,31 @@ uint8_t dg[] {
   0b00000111,//7
   0b01111111,//8
   0b01101111,//9
+  0b10000000//DP
   //pgfedbca
 };
 
-uint8_t select[] {
-  0b00000001,
-  0b00000010,
-  0b00000100,
-  0b00001000,
-  0b00010000,
-  0b00100000,
-  0b01000000,
-  0b10000000,
-};
+//uint8_t select[] {
+//  0b00000001,
+//  0b00000010,
+//  0b00000100,
+//  0b00001000,
+//  0b00010000,
+//  0b00100000,
+//  0b01000000,
+//  0b10000000,
+//};
 
-int dataArray[] = {1,2,3,4,5,6,7,8};
+int dataArray[] = {0, 0, 0, 0, 0, 0, 0, 0};
+void dataToArray(uint32_t data) {
+  for (int i = 0; i <= 7; i++) {
+    if (data <= 0)
+      dataArray[i] = 0;
 
+    dataArray[i] = data % 10;
+    data /= 10;
+  }
+}
 //void dataToArray(uint32_t data) {
 //  if (data > 99999999) {
 //    data%=100000000;
@@ -78,16 +87,12 @@ uint16_t selector = 1;
 
 
 void loop() {
-  //  Serial.println(selector);
   disp(dataArray[counter], selector); //0b10000000
   selector <<= 1;
   counter++;
   counter %= 8;
-
   selector %= 255;
-  //  data = analogRead(A1);
-  //  //  Serial.println(data);
-  //dataToArray(12345678);
+  dataToArray(123);
   delay(1);
 }
 void disp(uint8_t digit = 0, uint8_t place = 0) {
