@@ -1,21 +1,18 @@
+#include <I2C_Anything.h>
 #include <SPI.h>
+#include<Wire.h>
+
 #define   LOAD  10
 #define   MOSI  11
 #define   MISO  12
 #define   SCK   13
 //#define   SERIAL_DEBUG
-//#define USE_BLINKWITHOUTDELAY
-#ifdef USE_BLINKWITHOUTDELAY
-//for timing purposes
-unsigned long previousMillis = 0;        // will store last time LED was updated
-const long interval = 500;           // interval at which to blink (milliseconds)
-#endif
+
 void disp(uint8_t, uint8_t);
+uint32_t i2c_data = 0;
+
 void setup() {
-  //  pinMode(A0, OUTPUT);
-  //  pinMode(A2, OUTPUT);
-  //  digitalWrite(A0, HIGH);
-  //  digitalWrite(A2, LOW);
+  Wire.begin(5);
 
 #ifdef SERIAL_DEBUG
   Serial.begin(9600);
@@ -30,7 +27,6 @@ void setup() {
   pinMode(SCK, OUTPUT);
   pinMode(MISO, INPUT);
   digitalWrite(LOAD, HIGH);
-  //  Serial.begin(9600);
 }
 uint8_t dg[] {
   0b00111111,//0
@@ -47,44 +43,27 @@ uint8_t dg[] {
   //pgfedbca
 };
 
-//uint8_t select[] {
-//  0b00000001,
-//  0b00000010,
-//  0b00000100,
-//  0b00001000,
-//  0b00010000,
-//  0b00100000,
-//  0b01000000,
-//  0b10000000,
-//};
-
 int dataArray[] = {0, 0, 0, 0, 0, 0, 0, 0};
-void dataToArray(uint32_t data) {
+void dataToArray(uint32_t data) {       //Splits the digits and feeds into dataArray
   for (int i = 0; i <= 7; i++) {
     if (data <= 0)
       dataArray[i] = 0;
-
+      
     dataArray[i] = data % 10;
     data /= 10;
   }
 }
-//void dataToArray(uint32_t data) {
-//  if (data > 99999999) {
-//    data%=100000000;
-//  }
-//  dataArray[]
-//  dataArray[]
-//  dataArray[]
-//  dataArray[]
-//  dataArray[]
-//  dataArray[]
-//  dataArray[]
-//  dataArray[]
-//}
+
 int counter = 0;
-int data;
 uint16_t selector = 1;
 
+void reciveEvent(int howMany) {
+  if (howMany >= (sizeof i2c_data)) {
+    I2C_readAnything (i2c_data);
+    //    Serial.print("in i2c");
+    //    Serial.println(i2c_data);
+  }
+}
 
 void loop() {
   disp(dataArray[counter], selector); //0b10000000
@@ -92,7 +71,8 @@ void loop() {
   counter++;
   counter %= 8;
   selector %= 255;
-  dataToArray(123);
+  Wire.onReceive(reciveEvent);
+  dataToArray(i2c_data);
   delay(1);
 }
 void disp(uint8_t digit = 0, uint8_t place = 0) {
