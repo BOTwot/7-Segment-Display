@@ -13,7 +13,7 @@ uint32_t i2c_data = 0;
 
 void setup() {
   Wire.begin(5);
-
+  Wire.onReceive(reciveEvent);
 #ifdef SERIAL_DEBUG
   Serial.begin(9600);
   Serial.println("HEllo");
@@ -71,7 +71,6 @@ void loop() {
   counter++;
   counter %= 8;
   selector %= 255;
-  Wire.onReceive(reciveEvent);
   dataToArray(i2c_data);
   delay(1);
 }
