@@ -5,20 +5,18 @@ const int slaveAddress = 5;
 void setup() {
   Wire.begin();
   pinMode(A1, INPUT);
-  //  Serial.begin(9600);
-//  Wire.beginTransmission(slaveAddress);
-//  I2C_writeAnything (-1234.56);
-//  Wire.endTransmission();
+    Serial.begin(9600);
 }
-float mapfloat(float x, float in_min, float in_max, float out_min, float out_max)
-{
-  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
+//float mapfloat(float x, float in_min, float in_max, float out_min, float out_max)
+//{
+//  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+//}
 void loop() {
-  float reading = analogRead(A1);
+  float reading = -156.23;
   //  voltage = mapfloat(reading, 0, 1023, 0, 12);
     Wire.beginTransmission(slaveAddress);
-    I2C_writeAnything (-1234.56);
+    I2C_writeAnything (reading);
+//    Serial.println(reading);
     Wire.endTransmission();
 
 }

@@ -11,9 +11,10 @@
 float i2cData = 0;
 float pointValue = 0;
 uint32_t integer = 0;
-bool displayMinus = false, receivingData = false;
+bool displayMinus = false;
 int counter = 0;
 uint16_t selector = 1;
+volatile long lastDataReceived;
 void disp(uint8_t, uint8_t);
 void dispNoI2C(uint8_t, uint8_t);
 
@@ -100,8 +101,11 @@ void dataToArray(uint32_t integer, uint32_t pointValue) {      //Splits the digi
 void reciveEvent(int howMany) {
   if (howMany >= (sizeof i2cData)) {
     I2C_readAnything (i2cData);
+    lastDataReceived = millis();
     //    Serial.print("in i2c");
     //    Serial.println(i2cData);
+    //    Serial.print("lastDataReceived");
+    //    Serial.println(lastDataReceived);
   }
 }
 void splitNum(float i2cData) {
@@ -121,25 +125,31 @@ void splitNum(float i2cData) {
 }
 
 bool noI2CData() {
-  if (!receivingData)
+  volatile long currentTime = millis();
+  if ((currentTime - lastDataReceived) >= 1000) {
+    //    Serial.print((currentTime));
+    //    Serial.print("-" );
+    //    Serial.print((lastDataReceived));
+    //    Serial.print("=");
+    //    Serial.println((currentTime - lastDataReceived) );
     return true;
-  else
+  }
+  else {
     return false;
+  }
 }
 
 void loop() {
   while (noI2CData()) {
     dispNoI2C(noI2CMsg[counter], selector);
-    //    receivingData = false;
     selector <<= 1;
     counter++;
     counter %= 8;
     selector %= 255;
     delay(1);
-    //    Serial.println("No I2C Devices Found!!!!!");
+    Serial.println("No I2C Devices Found!!!!!");
   }
   disp(dataArray[counter], selector); //0b10000000
-  //  receivingData = false;
   selector <<= 1;
   counter++;
   counter %= 8;
