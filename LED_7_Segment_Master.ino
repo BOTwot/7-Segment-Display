@@ -6,6 +6,9 @@ void setup() {
   Wire.begin();
   pinMode(A1, INPUT);
   //  Serial.begin(9600);
+//  Wire.beginTransmission(slaveAddress);
+//  I2C_writeAnything (-1234.56);
+//  Wire.endTransmission();
 }
 float mapfloat(float x, float in_min, float in_max, float out_min, float out_max)
 {
@@ -13,9 +16,9 @@ float mapfloat(float x, float in_min, float in_max, float out_min, float out_max
 }
 void loop() {
   float reading = analogRead(A1);
-  voltage = mapfloat(reading, 0, 1023, 0, 12);
-  Wire.beginTransmission(slaveAddress);
-  I2C_writeAnything (voltage);
-  Wire.endTransmission();
+  //  voltage = mapfloat(reading, 0, 1023, 0, 12);
+    Wire.beginTransmission(slaveAddress);
+    I2C_writeAnything (-1234.56);
+    Wire.endTransmission();
 
 }
